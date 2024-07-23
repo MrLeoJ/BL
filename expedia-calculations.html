@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expedia Calculations</title>
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/mkhpBZ0y/expedia.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #282c34;
+            color: #FFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #3a3f4b;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        #ratesTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        #ratesTable th,
+        #ratesTable td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #4a4f5a;
+        }
+
+        #ratesTable th {
+            font-weight: 500;
+            background-color: #3e4450;
+            color: #FFF;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            background-color: #4a4f5a;
+            color: #FFF;
+            border-radius: 4px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus {
+            outline: 2px solid #61dafb;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        button {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
+
+        #addDayButton {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #61dafb;
+            color: #282c34;
+        }
+
+        #addDayButton:hover {
+            background-color: #4fa8c7;
+        }
+
+        .popup-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #282c34;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 5%;
+            z-index: 1000;
+        }
+
+        .popup-box {
+            top: 20%;
+            background-color: #3a3f4b;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+        }
+
+        .popup-box h1 {
+            margin-bottom: 15px;
+            margin-top: 20px;
+        }
+
+        .popup-box p {
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #282c34;
+            border: none;
+            color: #FFF;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px 12px;
+        }
+
+        .close-btn:hover {
+            background-color: #cf0c50;
+        }
+
+        .input-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .input-row input {
+            width: 48%;
+        }
+
+        #submitDateButton {
+            width: 95%;
+            background-color: #61dafb;
+            color: white;
+        }
+
+        #submitDateButton:hover {
+            background-color: #4fa8c7;
+        }
+
+        .copy-btn {
+            background-color: #282c34;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .copy-btn:hover {
+            background-color: #61dafb;
+        }
+
+        .delete-btn {
+            background-color: #282c34;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #cf0c50;
+        }
+
+        #messagePopup {
+            position: fixed;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #61dafb;
+            color: #282c34;
+            padding: 10px 20px;
+            border-radius: 4px;
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #messagePopup.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .input-row {
+                flex-direction: column;
+            }
+
+            .input-row input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+
+        .tooltip input{width: 90%;} /* Lx */
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Expedia Calculations</h1>
+        
+        <table id="ratesTable">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Mews Rate</th>
+                    <th>New Rate</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be generated by JavaScript -->
+            </tbody>
+        </table>
+        <button id="addDayButton"><i class="fas fa-plus"></i> Add Another Day</button>
+    </div>
+
+    <!-- Date input popup -->
+    <div id="datePopup" class="popup-container hidden">
+        <div class="popup-box">
+            <button class="close-btn" id="closeDatePopup">&times;</button>
+            <h1>Booking Details</h1>
+            <div class="input-row">
+                <div class="tooltip">
+                    <input type="text" id="startDateInput" placeholder="DD/MM/YYYY" aria-label="First Date of Booking">
+                    <span class="tooltiptext">First Date of Booking</span>
+                </div>
+                <div class="tooltip">
+                    <input type="number" id="numberOfNights" placeholder="Number of Nights" min="1" value="1">
+                    <span class="tooltiptext">Number of Nights</span>
+                </div>
+            </div>
+            <button id="submitDateButton">Submit</button>
+        </div>
+    </div>
+
+    <!-- Message popup -->
+    <div id="messagePopup" class="hidden">
+        <p id="messageText"></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    const datePopup = document.getElementById('datePopup');
+    const startDateInput = document.getElementById('startDateInput');
+    const numberOfNightsInput = document.getElementById('numberOfNights');
+    const submitDateButton = document.getElementById('submitDateButton');
+    const closeDatePopupButton = document.getElementById('closeDatePopup');
+    const addDayButton = document.getElementById('addDayButton');
+    const messagePopup = document.getElementById('messagePopup');
+    const messageText = document.getElementById('messageText');
+    const ratesTable = document.getElementById('ratesTable').getElementsByTagName('tbody')[0];
+    let startDate = null;
+
+    // Show the date input popup
+    datePopup.classList.remove('hidden');
+
+    // Close popup and add a single row
+    closeDatePopupButton.addEventListener('click', () => {
+        datePopup.classList.add('hidden');
+        addNewRow(null, 0);
+    });
+
+    // Validate and parse the input date
+    submitDateButton.addEventListener('click', submitDate);
+
+    // Handle Enter key press
+    datePopup.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            submitDate();
+        }
+    });
+
+    // Auto-add slashes to date input
+    startDateInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length > 8) {
+            this.value = this.value.slice(0, 8);
+        }
+        if (this.value.length >= 2 && this.value.charAt(2) !== '/') {
+            this.value = this.value.slice(0, 2) + '/' + this.value.slice(2);
+        }
+        if (this.value.length >= 5 && this.value.charAt(5) !== '/') {
+            this.value = this.value.slice(0, 5) + '/' + this.value.slice(5);
+        }
+    });
+
+    function submitDate() {
+        const dateValue = startDateInput.value;
+        const numberOfNights = parseInt(numberOfNightsInput.value, 10);
+
+        if (!isValidDate(dateValue) || isNaN(numberOfNights) || numberOfNights < 1) {
+            showMessage('Please enter a valid date (DD/MM/YYYY) and number of nights.');
+            return;
+        }
+
+        startDate = parseDate(dateValue);
+        
+        // Hide the date input popup and generate rows
+        datePopup.classList.add('hidden');
+        generateRows(startDate, numberOfNights);
+    }
+
+    function isValidDate(dateString) {
+        const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+        if (!regex.test(dateString)) return false;
+        const [, day, month, year] = dateString.match(regex);
+        const date = new Date(year, month - 1, day);
+        return date && date.getMonth() === month - 1;
+    }
+
+    function parseDate(dateString) {
+        const [day, month, year] = dateString.split('/');
+        return new Date(year, month - 1, day);
+    }
+
+    // Function to generate rows based on number of nights
+    function generateRows(start, numberOfNights) {
+        ratesTable.innerHTML = ''; // Clear existing rows
+        for (let i = 0; i < numberOfNights; i++) {
+            addNewRow(start, i);
+        }
+    }
+
+    // Function to add a new row
+    function addNewRow(start, offset) {
+        const row = document.createElement('tr');
+        
+        // Create date cell
+        const cellDate = document.createElement('td');
+        if (start) {
+            const currentDate = new Date(start);
+            currentDate.setDate(currentDate.getDate() + offset);
+            cellDate.textContent = formatDate(currentDate);
+            cellDate.dataset.date = currentDate.toISOString();
+        } else {
+            cellDate.textContent = `Day ${offset + 1}`;
+        }
+
+        // Create rate input cell
+        const cellRateInput = document.createElement('td');
+        const rateInput = document.createElement('input');
+        rateInput.type = 'number';
+        rateInput.step = '0.01';
+        rateInput.placeholder = 'Enter rate';
+        rateInput.setAttribute('aria-label', 'Enter rate');
+        rateInput.addEventListener('input', calculateNewRate);
+        cellRateInput.appendChild(rateInput);
+
+        // Create new rate cell
+        const cellNewRate = document.createElement('td');
+        cellNewRate.className = 'newRate';
+        cellNewRate.textContent = '0.00'; // Initial value
+
+        // Create actions cell
+        const cellActions = document.createElement('td');
+        
+        // Create copy button
+        const copyButton = document.createElement('button');
+        copyButton.className = 'copy-btn tooltip';
+        copyButton.innerHTML = '<i class="fas fa-copy"></i><span class="tooltiptext">Copy Rate</span>';
+        copyButton.setAttribute('aria-label', 'Copy new rate');
+        copyButton.addEventListener('click', () => {
+            copyNewRate(cellNewRate.textContent);
+        });
+
+        // Create delete button
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-btn tooltip';
+        deleteButton.innerHTML = '<i class="fas fa-trash"></i><span class="tooltiptext">Delete Row</span>';
+        deleteButton.setAttribute('aria-label', 'Delete row');
+        deleteButton.addEventListener('click', () => {
+            ratesTable.removeChild(row);
+            updateRowsAfterDeletion();
+        });
+
+        cellActions.appendChild(copyButton);
+        cellActions.appendChild(deleteButton);
+
+        // Append cells to row
+        row.appendChild(cellDate);
+        row.appendChild(cellRateInput);
+        row.appendChild(cellNewRate);
+        row.appendChild(cellActions);
+
+        // Append row to table
+        ratesTable.appendChild(row);
+    }
+
+    // Function to update rows after deletion
+    function updateRowsAfterDeletion() {
+        const rows = ratesTable.getElementsByTagName('tr');
+        for (let i = 0; i < rows.length; i++) {
+            const dateCell = rows[i].getElementsByTagName('td')[0];
+            if (startDate) {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(currentDate.getDate() + i);
+                dateCell.textContent = formatDate(currentDate);
+                dateCell.dataset.date = currentDate.toISOString();
+            } else {
+                dateCell.textContent = `Day ${i + 1}`;
+            }
+        }
+    }
+
+    // Function to format date
+    function formatDate(date) {
+        return date.toLocaleDateString('en-GB', {
+            weekday: 'short',
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+
+    // Function to calculate new rate
+    function calculateNewRate(event) {
+        const inputRate = parseFloat(event.target.value);
+        const newRateCell = event.target.closest('tr').querySelector('.newRate');
+        const newRate = inputRate * 1.2195; // Original Rate * 1.2195
+        newRateCell.textContent = isNaN(newRate) ? '0.00' : newRate.toFixed(2);
+    }
+
+    // Function to copy new rate to clipboard
+    function copyNewRate(rate) {
+        navigator.clipboard.writeText(rate).then(() => {
+            showMessage('Rate copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+            showMessage('Failed to copy. Please try again.');
+        });
+    }
+
+    // Function to show message popup
+    function showMessage(message) {
+        messageText.textContent = message;
+        messagePopup.classList.remove('hidden');
+        messagePopup.classList.add('show');
+        setTimeout(() => {
+            messagePopup.classList.remove('show');
+            setTimeout(() => {
+                messagePopup.classList.add('hidden');
+            }, 300); // Wait for fade out animation to complete
+        }, 3000);
+    }
+
+    // Event listener for the "Add Another Day" button
+    addDayButton.addEventListener('click', () => {
+        const rows = ratesTable.getElementsByTagName('tr');
+        let newOffset = rows.length;
+        
+        if (startDate) {
+            const newDate = new Date(startDate);
+            newDate.setDate(newDate.getDate() + newOffset);
+            addNewRow(newDate, 0);
+        } else {
+            addNewRow(null, newOffset);
+        }
+    });
+});
+    </script>
+</body>
+</html>
