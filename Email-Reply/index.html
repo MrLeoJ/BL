@@ -198,6 +198,27 @@
             text-align: center;
         }
     }
+
+    /* Lx */
+    #footer{
+        margin-top: 20px;
+        text-align: center;
+        color: #a8a8a8;
+        font-weight: 300;
+    }
+
+    #footer a {
+        color: #a8a8a8;
+        text-decoration: none;
+        transition: color 0.5s;
+    }
+
+    #footer a:hover {
+        color: 5b5b5b;
+        text-decoration: none;
+        transition: color 0.5s;
+    }
+
     </style>
     </head>
     <body>
@@ -249,6 +270,14 @@
           </div>
         </div>
       </div>
+
+      <div id="footer">
+        | <a href="https://groq.com" target="_blank">Gorq</a> | 
+        <a href="https://console.groq.com/playground" target="_blank">Playground</a> | 
+        <a href="https://console.groq.com/docs/models" target="_blank">Supported Models</a> | 
+        <a href="https://console.groq.com/settings/logs?cursor=1729875223000." target="_blank">Logs</a> |
+      </div>
+
     </div>
     
     <div class="toast" id="toast">Copied to clipboard!</div>
@@ -469,4 +498,5 @@
       responseContent.textContent = 'Click "Generate Replies" to create email replies.';
     });
     </script>
+
     </body></html>
