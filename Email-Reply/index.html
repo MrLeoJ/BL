@@ -1,1 +1,472 @@
+<html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Response Generator</title>
+    <link rel="icon" type="image/x-icon" href="icon.png">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-normalize@2.0.0/modern-normalize.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
 
+    /* Scroll Bar Style */
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: rgba(58, 63, 75, 0.3);
+        border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(58, 63, 75, 0.6);
+    }
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+    }
+    
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .input-group {
+        margin-bottom: 20px;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 2px;
+        font-size: small;
+        font-weight: 500;
+        color: #444;
+    }
+    
+    textarea, select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        margin-top: 4px;
+        outline: none;
+        resize: vertical;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: #ddd;
+        box-shadow: 0 0 5px rgba(180, 180, 180, 0.5);
+    }
+    
+    select {
+        height: 50px;
+    }
+    
+    .generate-btn {
+        background-color: #232323;
+        color: white;
+        border: none;
+        /*padding: 12px 24px;*/
+        padding: 20px 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        width: 100%;
+        margin-bottom: 20px;
+        transition: background-color 0.2s;
+    }
+    
+    .generate-btn:hover {
+        background-color: #505050; /*  xx */
+        transition: background-color 0.2s;
+    }
+    
+    .generate-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+    
+    .tab-container {
+        margin-top: 20px;
+    }
+    
+    .tab-buttons {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+    }
+    
+    .tab-button {
+        width: 20%;
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: white;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s;
+    }
+    
+    .tab-button.active {
+        background: #232323;
+        color: white;
+        border-color: none;
+    }
+    
+    .tab-content {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 20px;
+        position: relative;
+        min-height: 200px;
+    }
+    
+    .copy-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .copy-button:hover {
+        background: #f0f0f0;
+    }
+    
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 6px;
+        display: none;
+    }
+    
+    .loading {
+        display: none;
+        text-align: center;
+        margin: 20px 0;
+        color: #666;
+    }
+    
+    .loading-spinner {
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 600px) {
+        .tab-buttons {
+            flex-wrap: wrap;
+        }
+        
+        .tab-button {
+            flex: 1 1 calc(33.333% - 8px);
+            text-align: center;
+        }
+    }
+    </style>
+    </head>
+    <body>
+    <div class="container">
+      <div class="card">
+        <div class="email-section">
+          <div class="input-group">
+            <textarea id="original-email" rows="4" placeholder="Original Email"></textarea>
+          </div>
+        </div>
+
+        <div class="input-group">
+            <textarea id="additional-info" rows="4" placeholder="Additional Information"></textarea>
+        </div>
+    
+        <div class="input-group">
+          <label for="tone">Tone of Voice</label>
+          <select id="tone">
+            <option value="professional">Professional</option>
+            <option value="friendly">Friendly</option>
+            <option value="casual">Casual</option>
+            <option value="formal">Formal</option>   
+          </select>
+        </div>
+    
+        <button class="generate-btn" id="generate-btn">
+          Generate
+        </button>
+        
+        <div class="loading" id="loading">
+          <i class="fas fa-spinner loading-spinner"></i>
+          Generating Replies...
+        </div>
+        
+        <div class="tab-container">
+          <div class="tab-buttons">
+            <button class="tab-button active" data-tab="1">Response 1</button>
+            <button class="tab-button" data-tab="2">Response 2</button>
+            <button class="tab-button" data-tab="3">Response 3</button>
+            <button class="tab-button" data-tab="4">Response 4</button>
+            <button class="tab-button" data-tab="5">Response 5</button>
+          </div>
+          
+          <div class="tab-content">
+            <button class="copy-button" aria-label="Copy to clipboard">
+              <i class="fas fa-copy"></i>
+            </button>
+            <div id="response-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="toast" id="toast">Copied to clipboard!</div>
+    
+    <script>
+    const BL_INFO = `
+    ## GENERAL RULES
+  - Do not add extra information other than the necessary to reply to the email
+  
+  ## EMAIL FORMATTING
+  - Always write in British English
+  - Always use the First-person plural on the email, for example, "we are sorry" instead of "I am sorry"
+  - If the sender signs the email with the full name, start the reply with "Dear Mr/Mrs/Ms" (choose accordingly) followed by their surname
+  - If the sender signs the email with their first name, start the reply with "Dear " followed by their first name
+  - Always use an appreciation phrase such as "Thank you for your email and for deciding to book with us" (this is just an example, you can use other words)
+  - Refrain from providing unasked information in the email reply such as room capacity, check-in times, check-out times, etc.
+  - Always finish the email reply with "Warmest regards, Leo Justo"
+  
+  ## HOTEL DETAILS
+  - The name of the hotel is Batty Langley's
+  - The check-in time is at 3pm. We do not guarantee early check-in
+  - Guests can drop off their luggage at any time
+  - The check-out time is 12pm. We do not guarantee late check-out
+  - We require credit or debit card details to secure the reservation. A reservation cannot be made without credit card details
+  - A reservation can be cancelled up to 2 days prior to the arrival date by 12 noon. As per our reservation policy, if a reservation is cancelled outside the cancellation policy (less than 2 days prior to the arrival date by 12 noon) we charge the full amount of the first night
+  
+  ## ROOM TYPES
+  - The room types offered are: Club Double, Superior Double, Luxury Double, Deluxe Double, Deluxe with Terrace, Junior Suite, Kitty Fisher Suite, Earl of Bollingbroke Suite
+  - The Club Double and Superior Double rooms have a maximum capacity of 2 people
+  - Some Luxury Doubles can accommodate 3 people but are not guaranteed
+  - Deluxe Double and Deluxe with Terrace have a maximum capacity of 3 people (with an extra bed in the room)
+  - Junior Suite can accommodate 4 people (given that 2 people share the King size bed and the other 2 share the sofa bed)
+  - Earl of Bollingbroke Suite has a maximum capacity of 3 people (with 1 extra bed in the room)
+  - For 3 or 4 people, the most suitable room types are Junior Suite and Kitty Fisher Suite as they feature a sofa-bed
+  - We do not have rooms for 5 people. If it is for more than 4 people it has to be two rooms
+  - We do not have rooms with Twin Beds
+  
+  ## AVAILABILITY & RATES
+  - If the sender is asking about availability, always assume we have availability
+  - If it is asked about rates but the room type is not specified, list all the rooms available by room type
+  - Room rates must always be presented following this formula: [Room Type]: " £xx.xx per night (VAT included)"
+  - We do not offer bed and breakfast rates
+  - Always present the room rates using bullet points
+  - All rates include VAT
+  
+  ## EXTRA BEDS
+  - The sofa-bed / extra bed for the 3rd person will have an additional cost of £45 per night if the 3rd person is 13 years old or older
+  - The sofa-bed / extra bed for the 3rd person will free of charge if the 3rd person is younger than 13 years old
+  
+  ## SPECIAL REQUESTS
+  - We do not guarantee any particular room feature such as a bath, walk-in shower, room decoration, views, etc.
+  - You can say something along the lines of "We will try our utmost but cannot guarantee it" (this is just an example, you can use other words)
+  
+  ## RESTAURANTS
+  - We will happily provide recommendations if requested
+  - After providing 5 recommendations state that we will be happy to provide some more
+  - Restaurant recommendations must always be presented following this formula: [Restaurant]: [Restaurant's Description]
+  - We do not book restaurants for the guests as the restaurant typically requires the guest's credit card details
+  
+  ## PARKING
+  - We do not have parking at the hotel
+  - We can email a PDF document with the nearest multi-story car parks in the area
+  
+  ## FLOWERS
+  - We provide flower arrangements
+  - We require at least 48 hours notice to order the flowers
+  - The bouquet sizes available are "Standart" (£35) or "Premium" (£65)
+  
+  ## BEVERAGES
+  - We can send the beverage menu if they want to have a bottle in the room when they arrive
+    `;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const GROQ_API_KEY = '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';
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const copyButton = document.querySelector('.copy-button');
+      const toast = document.getElementById('toast');
+      const responseContent = document.getElementById('response-content');
+      const generateBtn = document.getElementById('generate-btn');
+      const loadingElement = document.getElementById('loading');
+      
+      let generatedResponses = new Array(5).fill('');
+      let currentTabIndex = 0;
+    
+      async function generateResponses(originalEmail, tone, additionalInfo) {
+        try {
+          const systemPrompt = `
+            You are a 5-star hotel receptionist with access to the following company information:
+            ${BL_INFO}
+            
+            Use this information to generate appropriate responses while following all company guidelines.
+            Each response should:
+            - Follow the communication guidelines
+            - British English spelling and grammar
+            - Use appropriate templates
+            - Concise and straightforward language
+            - Only information directly related to the original email's inquiries
+            - Reference company policies when applicable
+            - Use proper email structure (greeting, body, closing)
+            - Keep paragraphs short and focused
+            - Use appropriate salutations based on the original email's tone
+            - Maintain the specified tone (${tone})
+          `;
+    
+          const responses = [];
+          
+          // Generate responses sequentially
+          for (let i = 0; i < 5; i++) {
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY}`
+              },
+              body: JSON.stringify({
+                model: "llama-3.2-90b-vision-preview",
+                messages: [
+                  {
+                    role: "system",
+                    content: systemPrompt
+                  },
+                  {
+                    role: "user",
+                    content: `Original email: ${originalEmail}\n\nAdditional context: ${additionalInfo}\n\nPlease generate a unique response variation #${i + 1} with a ${tone} tone, incorporating relevant company information and following all guidelines.`
+                  }
+                ],
+                temperature: 0.8,
+                max_tokens: 1024,
+                top_p: 1,
+                stream: false
+              })
+            });
+    
+            if (!response.ok) {
+              const errorDetail = await response.text();
+              throw new Error(`API request failed: ${response.status} - ${errorDetail}`);
+            }
+    
+            const data = await response.json();
+            
+            if (data.error) {
+              throw new Error(data.error.message);
+            }
+            
+            responses.push(data.choices[0].message.content.trim());
+            
+            // Add a small delay between requests
+            if (i < 4) {
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+          }
+          
+          return responses;
+        } catch (error) {
+          console.error('Error details:', error);
+          throw new Error(`Failed to generate replies: ${error.message}`);
+        }
+      }
+      
+      generateBtn.addEventListener('click', async () => {
+        const originalEmail = document.getElementById('original-email').value;
+        const tone = document.getElementById('tone').value;
+        const additionalInfo = document.getElementById('additional-info').value;
+        
+        if (!originalEmail.trim()) {
+          alert('Please paste the original email first.');
+          return;
+        }
+        
+        // Show loading state
+        generateBtn.disabled = true;
+        loadingElement.style.display = 'block';
+        responseContent.textContent = 'Generating Replies...';
+        
+        try {
+          generatedResponses = await generateResponses(originalEmail, tone, additionalInfo);
+          responseContent.textContent = generatedResponses[currentTabIndex];
+        } catch (error) {
+          console.error('Error:', error);
+          alert(`Error: ${error.message}. Please check the console for more details.`);
+          responseContent.textContent = 'Error generating replies. Please try again.';
+        } finally {
+          // Hide loading state
+          generateBtn.disabled = false;
+          loadingElement.style.display = 'none';
+        }
+      });
+      
+      // Tab switching
+      tabButtons.forEach((button, index) => {
+        button.addEventListener('click', () => {
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+          currentTabIndex = index;
+          responseContent.textContent = generatedResponses[currentTabIndex] || 'Click "Generate Replies" to create email replies.';
+        });
+      });
+      
+      // Copy functionality
+      copyButton.addEventListener('click', () => {
+        const textToCopy = responseContent.textContent;
+        if (textToCopy && textToCopy !== 'Click "Generate Replies" to create email replies.') {
+          navigator.clipboard.writeText(textToCopy)
+            .then(() => {
+              toast.style.display = 'block';
+              setTimeout(() => {
+                toast.style.display = 'none';
+              }, 3000);
+            })
+            .catch(err => {
+              console.error('Failed to copy text:', err);
+              alert('Failed to copy text to clipboard');
+            });
+        }
+      });
+      
+      // Initial content
+      responseContent.textContent = 'Click "Generate Replies" to create email replies.';
+    });
+    </script>
+    </body></html>
