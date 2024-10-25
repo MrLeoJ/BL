@@ -2,7 +2,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Response Generator</title>
-    <link rel="icon" type="image/x-icon" href="icon.png">
+    <link rel="icon" type="image/x-icon" href="https://is.gd/MOcbrR">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-normalize@2.0.0/modern-normalize.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -226,7 +226,7 @@
       <div class="card">
         <div class="email-section">
           <div class="input-group">
-            <textarea id="original-email" rows="4" placeholder="Original Email"></textarea>
+            <textarea id="original-email" rows="14" placeholder="Original Email"></textarea>
           </div>
         </div>
 
@@ -276,6 +276,8 @@
         <a href="https://console.groq.com/playground" target="_blank">Playground</a> | 
         <a href="https://console.groq.com/docs/models" target="_blank">Supported Models</a> | 
         <a href="https://console.groq.com/settings/logs?cursor=1729875223000." target="_blank">Logs</a> |
+        <br>
+        <p>Powered by Laziness &copy; 2024</p>
       </div>
 
     </div>
@@ -472,14 +474,14 @@
           tabButtons.forEach(btn => btn.classList.remove('active'));
           button.classList.add('active');
           currentTabIndex = index;
-          responseContent.textContent = generatedResponses[currentTabIndex] || 'Click "Generate Replies" to create email replies.';
+          responseContent.textContent = generatedResponses[currentTabIndex] || 'ERROR! Just kidding. Click on "Generate", you idiot.';
         });
       });
       
       // Copy functionality
       copyButton.addEventListener('click', () => {
         const textToCopy = responseContent.textContent;
-        if (textToCopy && textToCopy !== 'Click "Generate Replies" to create email replies.') {
+        if (textToCopy && textToCopy !== 'ERROR! Just kidding. Click on "Generate", you idiot.') {
           navigator.clipboard.writeText(textToCopy)
             .then(() => {
               toast.style.display = 'block';
@@ -495,7 +497,7 @@
       });
       
       // Initial content
-      responseContent.textContent = 'Click "Generate Replies" to create email replies.';
+      responseContent.textContent = 'ERROR! Just kidding. Click on "Generate", you idiot.';
     });
     </script>
 
